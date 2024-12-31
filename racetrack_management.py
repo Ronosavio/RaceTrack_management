@@ -1,9 +1,10 @@
 from datetime import time, datetime, timedelta
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from typing import Annotated
 from abc import ABC, abstractmethod
 
-min_time = 3
+mini_book_time = 3
+
 Rt_bike_capacity = 4
 vehicle_no = {'Bikes': [], 'Cars':[], 'Suv\'s':[]}
 
@@ -15,14 +16,17 @@ suv_cost = 200
 vip_suv_cost = 300
 
 class Revenue():
-    def __init__(self, bike_count, car_count, suv_count, vip_car_count, vip_suv_count):
+    def __init__(self, bike_count = 0, car_count = 0, suv_count = 0, vip_car_count = 0, vip_suv_count = 0):
         self.bike_count = bike_count
         self.car_count = car_count
         self.suv_count = suv_count
         self.vip_car_count = vip_car_count
-        self.vip_suv_count = vip_suv_count 
+        self.vip_suv_count = vip_suv_count
         
     def Regular_track_profit():
+        pass
+    
+    def Vip_track_profit():
         pass
 
 
@@ -35,7 +39,7 @@ class track_Management(ABC):
        
       def regular_bike_time(self):
           entry_time = datetime.strptime(str(self.V_Time), '%H:%M:%S')
-          update_time = entry_time + timedelta(hours = 3) 
+          update_time = entry_time + timedelta(hours = mini_book_time) 
           exit_time = update_time.time()
           
           bike_count = len(vehicle_no['Bikes'])
@@ -104,20 +108,21 @@ class Book(BaseModel):
 
 class Additional(BaseModel):
       V_No: str
-      Ex_T:Annotated[time, Field(ge = '13:00:00' , le = '20:00:00')]      
+      Ex_T:Annotated[time, Field(ge = '13:00:00' , le = '20:00:00')]  
+          
       
-      
-vehicle1 = Book(V_Type='bike', V_No='23', Etr_T='13:00:00') 
-vehicle2 = Book(V_Type='bike', V_No='223', Etr_T='17:00:00') 
-vehicle3 = Book(V_Type='bike', V_No='231', Etr_T='13:00:00') 
-vehicle4 = Book(V_Type='bike', V_No='2234', Etr_T='13:00:00') 
-vehicle5 = Book(V_Type='bike', V_No='2312', Etr_T='17:00:00') 
+vehicle_info = [['bike', 'M20' , '13:00:00'], ['bike', 'M201' , '17:00:00'], ['bike', 'M203' , '18:00:00'], ['bike', 'M204' , '14:00:00'], ]
 
-vehicle1.book()
-vehicle2.book()
-vehicle3.book()
-vehicle4.book()
-vehicle5.book()
+for vehicle in vehicle_info:
+    try:      
+        v_type, v_no, entr_t = vehicle
+        Book(V_Type  = v_type, V_No= v_no, Etr_T= entr_t).book()
+    except ValidationError as e:
+            print(f"\n\nError for vehicle ( {v_type}) No: {v_no}: {e}\n\n")
+
+
+
+print(vehicle_no['Bikes'])  # Outputs the final state of the bike records
+
      
 
-print(vehicle_no['Bikes'])
