@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, ValidationError
 from typing import Annotated
 from abc import ABC, abstractmethod
 
-mini_book_time = 3
+mini_book_time = 3 #minimum booking time is three hours 
 
 Rt_bike_capacity = 4
 vehicle_no = {'Bikes': [], 'Cars':[], 'Suv\'s':[]}
@@ -16,6 +16,7 @@ suv_cost = 200
 vip_suv_cost = 300
 
 class Revenue():
+    Regular_revenue  = 0 
     def __init__(self, bike_count = 0, car_count = 0, suv_count = 0, vip_car_count = 0, vip_suv_count = 0):
         self.bike_count = bike_count
         self.car_count = car_count
@@ -23,8 +24,13 @@ class Revenue():
         self.vip_car_count = vip_car_count
         self.vip_suv_count = vip_suv_count
         
-    def Regular_track_profit():
-        pass
+    def Regular_track_profit(self):
+        profit_bike = self.bike_count * (mini_book_time *bike_cost)  
+        profit_car = self.car_count * (mini_book_time * car_cost)
+        profit_suv = self.suv_count * (mini_book_time * suv_cost)
+        Revenue.Regular_revenue = profit_bike + profit_car + profit_suv
+        return Revenue.Regular_revenue
+        
     
     def Vip_track_profit():
         pass
@@ -43,7 +49,7 @@ class track_Management(ABC):
           exit_time = update_time.time()
           
           bike_count = len(vehicle_no['Bikes'])
-          if bike_count == Rt_bike_capacity :
+          if bike_count == Rt_bike_capacity:
              for bike in vehicle_no['Bikes'][:]:
                  if bike['exit_time'] < self.V_Time:
                     vehicle_no['Bikes'].remove(bike)
@@ -88,7 +94,8 @@ class Regular_track(track_Management):
           if self.V_Type.lower() == 'bike':
              count  = self.regular_bike_time()
              Regular_track.bike_count = count 
-             Revenue(Regular_track.bike_count)
+             prf = Revenue(Regular_track.bike_count).Regular_track_profit()
+             print(prf)
           
     
 
@@ -111,9 +118,9 @@ class Additional(BaseModel):
       Ex_T:Annotated[time, Field(ge = '13:00:00' , le = '20:00:00')]  
           
       
-vehicle_info = [['bike', 'M20' , '13:00:00'], ['bike', 'M201' , '17:00:00'], ['bike', 'M203' , '18:00:00'], ['bike', 'M204' , '14:00:00'], ]
+book = [['bike', 'M20' , '17:00:00'], ['bike', 'M201' , '17:00:00'], ['bike', 'M203' , '18:00:00'], ['bike', 'M204' , '14:00:00'], ]
 
-for vehicle in vehicle_info:
+for vehicle in book:
     try:      
         v_type, v_no, entr_t = vehicle
         Book(V_Type  = v_type, V_No= v_no, Etr_T= entr_t).book()
@@ -123,6 +130,3 @@ for vehicle in vehicle_info:
 
 
 print(vehicle_no['Bikes'])  # Outputs the final state of the bike records
-
-     
-
