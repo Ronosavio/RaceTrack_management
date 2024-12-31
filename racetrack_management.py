@@ -15,6 +15,13 @@ suv_cost = 200
 vip_suv_cost = 300
 
 class Revenue():
+    def __init__(self, bike_count, car_count, suv_count, vip_car_count, vip_suv_count):
+        self.bike_count = bike_count
+        self.car_count = car_count
+        self.suv_count = suv_count
+        self.vip_car_count = vip_car_count
+        self.vip_suv_count = vip_suv_count 
+        
     def Regular_track_profit():
         pass
 
@@ -32,12 +39,13 @@ class track_Management(ABC):
           exit_time = update_time.time()
           
           bike_count = len(vehicle_no['Bikes'])
-          if bike_count < Rt_bike_capacity :
+          if bike_count == Rt_bike_capacity :
              for bike in vehicle_no['Bikes'][:]:
-                 print(bike['exit_time'])
-                 #if datetime.strptime(str(bike['exit_time']), '%H:%M:%S') < self.V_Time:
-                    #vehicle_no['Bikes'].remove(bike)
-          else: 
+                 if bike['exit_time'] < self.V_Time:
+                    vehicle_no['Bikes'].remove(bike)
+             bike_count = len(vehicle_no['Bikes'])
+
+          if bike_count  ==  Rt_bike_capacity: 
                print("RACE TRACK FULL")
                return(bike_count)
           if any(bike['bike_no'] == self.V_No for bike in vehicle_no['Bikes']):
@@ -76,7 +84,7 @@ class Regular_track(track_Management):
           if self.V_Type.lower() == 'bike':
              count  = self.regular_bike_time()
              Regular_track.bike_count = count 
-             print(Regular_track.bike_count)
+             Revenue(Regular_track.bike_count)
           
     
 
@@ -100,10 +108,10 @@ class Additional(BaseModel):
       
       
 vehicle1 = Book(V_Type='bike', V_No='23', Etr_T='13:00:00') 
-vehicle2 = Book(V_Type='bike', V_No='223', Etr_T='13:00:00') 
+vehicle2 = Book(V_Type='bike', V_No='223', Etr_T='17:00:00') 
 vehicle3 = Book(V_Type='bike', V_No='231', Etr_T='13:00:00') 
 vehicle4 = Book(V_Type='bike', V_No='2234', Etr_T='13:00:00') 
-vehicle5 = Book(V_Type='bike', V_No='2312', Etr_T='13:00:00') 
+vehicle5 = Book(V_Type='bike', V_No='2312', Etr_T='17:00:00') 
 
 vehicle1.book()
 vehicle2.book()
