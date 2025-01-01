@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 mini_book_time = 3 #minimum booking time is three hours 
 
 Rt_bike_capacity = 4
+Rt_car_capacity = 2 
+
 vehicle_no = {'Bikes': [], 'Cars':[], 'Suv\'s':[]}
 
 #per hour cost for each vehicle  depending on the track
@@ -66,11 +68,30 @@ class track_Management(ABC):
           bike_count = len(vehicle_no['Bikes'])
           return bike_count
              
-             
-                   
-                    
+                 
       def regular_car_time(self):
-          pass
+          entry_time = datetime.strptime(str(self.V_Time), '%H:%M:%S')
+          update_time = entry_time + timedelta(hours = mini_book_time) 
+          exit_time = update_time.time()
+          
+          car_count = len(vehicle_no['Cars'])
+          if car_count == Rt_car_capacity:
+             for car in vehicle_no['Cars'][:]:
+                 if car['exit_time'] < self.V_Time:
+                    vehicle_no['Cars'].remove(car)
+             car_count = len(vehicle_no['Cars'])
+
+          if car_count  ==  Rt_car_capacity: 
+               print("RACE TRACK FULL")
+               return(car_count)
+          if any(car['bike_no'] == self.V_No for car in vehicle_no['Cars']):
+                 print('This Car number is already registered')
+          else:
+              vehicle_no['Cars'].append({'car_no':self.V_No, 'entry_time':entry_time, 'exit_time':exit_time})
+              print("SUCCESS")
+          car_count = len(vehicle_no['Cars'])
+          return car_count
+      
       def regular_suv_time(self):
           pass 
       def vip_car_time(self):
@@ -96,6 +117,11 @@ class Regular_track(track_Management):
              Regular_track.bike_count = count 
              prf = Revenue(Regular_track.bike_count).Regular_track_profit()
              print(prf)
+          if self.V_Type.lower() == 'car':
+             count = self.regular_car_time()
+             Regular_track.car_count = count 
+             prf = Revenue(Regular_track.car_count).Regular_track_profit()
+             print(prf)
           
     
 
@@ -118,7 +144,7 @@ class Additional(BaseModel):
       Ex_T:Annotated[time, Field(ge = '13:00:00' , le = '20:00:00')]  
           
       
-book = [['bike', 'M20' , '17:00:00'], ['bike', 'M201' , '17:00:00'], ['bike', 'M203' , '18:00:00'], ['bike', 'M204' , '14:00:00'], ]
+book = [['bike', 'M20' , '17:00:00'], ['bike', 'M201' , '17:00:00'], ['car', 'M203' , '17:00:00'], ['bike', 'M204' , '14:00:00'], ]
 
 for vehicle in book:
     try:      
